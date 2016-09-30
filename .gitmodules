@@ -1,0 +1,3 @@
+[submodule "External/minicsv"]
+	path = External/minicsv
+	url = https://github.com/shaovoon/minicsv.git
