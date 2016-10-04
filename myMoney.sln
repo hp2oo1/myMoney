@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Project1", "Project1\Projec
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "minicsv", "External\minicsv\MiniCSV\minicsv.vcxproj", "{D63286CD-48C0-4A6A-9030-B3D03AB50490}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "myMoney", "myMoney\myMoney.vcxproj", "{DCE00AC8-CEC9-4738-85F1-41C1AEECC9E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -29,6 +31,12 @@ Global
 		{D63286CD-48C0-4A6A-9030-B3D03AB50490}.Release|x64.ActiveCfg = Release|Win32
 		{D63286CD-48C0-4A6A-9030-B3D03AB50490}.Release|x86.ActiveCfg = Release|Win32
 		{D63286CD-48C0-4A6A-9030-B3D03AB50490}.Release|x86.Build.0 = Release|Win32
+		{DCE00AC8-CEC9-4738-85F1-41C1AEECC9E3}.Debug|x64.ActiveCfg = Debug|Win32
+		{DCE00AC8-CEC9-4738-85F1-41C1AEECC9E3}.Debug|x86.ActiveCfg = Debug|Win32
+		{DCE00AC8-CEC9-4738-85F1-41C1AEECC9E3}.Debug|x86.Build.0 = Debug|Win32
+		{DCE00AC8-CEC9-4738-85F1-41C1AEECC9E3}.Release|x64.ActiveCfg = Release|Win32
+		{DCE00AC8-CEC9-4738-85F1-41C1AEECC9E3}.Release|x86.ActiveCfg = Release|Win32
+		{DCE00AC8-CEC9-4738-85F1-41C1AEECC9E3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
