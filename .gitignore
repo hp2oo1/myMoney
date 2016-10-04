@@ -4,6 +4,8 @@ Thumbs.db
 *.ncb
 *.suo
 *.user
+*.db
+*.opendb
 [Dd]ebug*/
 [Rr]elease*/
 */[Dd]ebug*/
