@@ -7,6 +7,8 @@ Thumbs.db
 *.user
 *.db
 *.opendb
+ipch/
+*.pdb/
 [Dd]ebug*/
 [Rr]elease*/
 */[Dd]ebug*/

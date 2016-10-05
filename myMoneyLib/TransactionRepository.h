@@ -13,6 +13,8 @@ namespace myMoneyLib
 		TransactionRepository();
 		~TransactionRepository();
 
+		int LoadData(std::string filename);
+
 		std::vector<Transaction> SearchTransactions(std::string);
 	};
 }

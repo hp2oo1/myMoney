@@ -9,24 +9,37 @@ namespace myMoneyLib
 {
 	TransactionRepository::TransactionRepository()
 	{
-		// a sample list of transactions to simulate a database
-		mini::csv::ifstream is("D:/Peng_other_stuff/projects/myMoney/Data/sample.csv");
-		is.set_delimiter(',', "$$");
-		is.enable_trim_quote_on_str(true, '\"');
-		if (is.is_open())
-		{
-			Transaction t;
-			is.read_line(); // skip head line
-			while (is.read_line())
-			{
-				is	>> t.date >> t.type >> t.description >> t.value >> t.balance >> t.accountName >> t.accountNumber;
-				transactions.push_back(t);
-			}
-		}
 	}
 
 	TransactionRepository::~TransactionRepository()
 	{
+	}
+
+	int TransactionRepository::LoadData(std::string filename)
+	{
+		// a sample list of transactions to simulate a database
+		mini::csv::ifstream is(filename.c_str());
+		is.set_delimiter(',', "$$");
+		is.enable_trim_quote_on_str(true, '\"');
+		is.enable_terminate_on_blank_line(false);
+		if (is.is_open())
+		{
+			Transaction t;
+			bool isHeadLine = true;
+			while (is.read_line())
+			{
+				// skip head line (first non-blank line)
+				if (isHeadLine)
+				{
+					isHeadLine = false;
+					is.read_line();
+				}
+				is >> t.date >> t.type >> t.description >> t.value >> t.balance >> t.accountName >> t.accountNumber;
+				transactions.push_back(t);
+			}
+			return transactions.size();
+		}
+		return -1;
 	}
 
 	std::vector<Transaction> TransactionRepository::SearchTransactions(std::string searchTerm)
