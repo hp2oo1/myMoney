@@ -1,4 +1,6 @@
 
+-------------------------------------------------------------
+
 http://stackoverflow.com/questions/3922660/which-visual-c-file-types-should-be-committed-to-version-control
 
 Yes:
@@ -31,4 +33,11 @@ sdf: intellisense dbase
 suo: solution user options
 tlog: build log
 user: debug settings. Do preserve if just one dev or custom debug settings
+
+
+-------------------------------------------------------------
+
+https://www.tawesoft.co.uk/kb/article/mit-license-faq
+
+-------------------------------------------------------------
 
