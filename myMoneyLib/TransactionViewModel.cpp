@@ -6,7 +6,6 @@ namespace myMoneyLib
 	TransactionViewModel::TransactionViewModel()
 	{
 	}
-
 	TransactionViewModel::~TransactionViewModel()
 	{
 	}
@@ -15,12 +14,10 @@ namespace myMoneyLib
 	{
 		transactionsTotal = repository.LoadData(inputFilename);
 	}
-
 	void TransactionViewModel::SetInputFile(std::string filename)
 	{
 		inputFilename = filename;
 	}
-
 	int TransactionViewModel::GetTransactionsTotal()
 	{
 		return transactionsTotal;
@@ -34,12 +31,16 @@ namespace myMoneyLib
 		}
 		else
 		{
-			transactionsFound = repository.SearchTransactions(searchTerm);
+			transactionsFound = repository.SearchTransactions(searchTerm, caseInsensitive);
 		}
 	}
 	void TransactionViewModel::SetSearchTerm(std::string search)
 	{
 		searchTerm = search;
+	}
+	void TransactionViewModel::SetCaseInsensitive(bool insensitive)
+	{
+		caseInsensitive = insensitive;
 	}
 	std::vector<Transaction> TransactionViewModel::GetSearchResults()
 	{

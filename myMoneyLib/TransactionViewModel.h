@@ -7,9 +7,12 @@ namespace myMoneyLib
 	class TransactionViewModel
 	{
 		TransactionRepository		repository;
+		
 		std::string					inputFilename;
 		int							transactionsTotal;
+		
 		std::string					searchTerm;
+		bool						caseInsensitive;
 		std::vector<Transaction>	transactionsFound;
 	public:
 		TransactionViewModel();
@@ -21,7 +24,7 @@ namespace myMoneyLib
 
 		void Search();
 		void SetSearchTerm(std::string search);
+		void SetCaseInsensitive(bool insensitive);
 		std::vector<Transaction> GetSearchResults();
-
 	};
 }

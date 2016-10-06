@@ -42,17 +42,29 @@ namespace myMoneyLib
 		return -1;
 	}
 
-	std::vector<Transaction> TransactionRepository::SearchTransactions(std::string searchTerm)
+	std::vector<Transaction> TransactionRepository::SearchTransactions(std::string searchTerm, bool caseInsensitive)
 	{
-		std::transform(searchTerm.begin(), searchTerm.end(), searchTerm.begin(), ::tolower);
-		
+		if (caseInsensitive)
+		{
+			std::transform(searchTerm.begin(), searchTerm.end(), searchTerm.begin(), ::tolower);
+		}
+
 		std::vector<Transaction> results;
+		std::size_t found;
 		for (int i = 0; i < transactions.size(); ++i)
 		{
 			Transaction &t = transactions[i];
-			std::string description = t.description;
-			std::transform(description.begin(), description.end(), description.begin(), ::tolower);
-			std::size_t found = description.find(searchTerm);
+			if (caseInsensitive)
+			{
+				std::string description = t.description;
+				std::transform(description.begin(), description.end(), description.begin(), ::tolower);
+				found = description.find(searchTerm);
+			}
+			else
+			{
+				found = t.description.find(searchTerm);
+			}
+			//
 			if (found != std::string::npos)
 			{
 				results.push_back(t);

@@ -15,6 +15,6 @@ namespace myMoneyLib
 
 		int LoadData(std::string filename);
 
-		std::vector<Transaction> SearchTransactions(std::string);
+		std::vector<Transaction> SearchTransactions(std::string searchTerm, bool caseInsensitive);
 	};
 }
