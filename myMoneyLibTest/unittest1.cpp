@@ -15,8 +15,9 @@ namespace myMoneyLibTest
 	{
 	public:
 		
-		TEST_METHOD(PrepareTestData)
+		TEST_METHOD(PrepareSampletData)
 		{
+			// create sample
 			std::ofstream fout("sample.csv");
 			fout << ""																							<< std::endl
 				 << "Date, Type, Description, Value, Balance, Account Name, Account Number"						<< std::endl
@@ -27,14 +28,9 @@ namespace myMoneyLibTest
 				 << ""																							<< std::endl;
 			fout.close();
 
-			Assert::AreEqual(1, 1);
-		}
-
-		TEST_METHOD(Load_test)
-		{
+			// load sample
 			tvm.SetInputFile("sample.csv");
 			tvm.Load();
-
 			int total = tvm.GetTransactionsTotal();
 
 			Assert::AreEqual(2, total);
@@ -42,34 +38,29 @@ namespace myMoneyLibTest
 
 		TEST_METHOD(Search_test)
 		{
+			// load sample
+			tvm.SetInputFile("sample.csv");
+			tvm.Load();
+
+			// search
 			tvm.SetSearchTerm("TV");
 			tvm.SetCaseInsensitive(false);
 			tvm.Search();
-
 			int count = tvm.GetSearchResults().size();
-
 			Assert::AreEqual(1, count);
-		}
 
-		TEST_METHOD(Search_CaseInsensitive_test)
-		{
+			// search - case insensitive
 			tvm.SetSearchTerm("tv");
 			tvm.SetCaseInsensitive(true);
 			tvm.Search();
-
-			int count = tvm.GetSearchResults().size();
-
+			count = tvm.GetSearchResults().size();
 			Assert::AreEqual(2, count);
-		}
 
-		TEST_METHOD(Search_NotFound)
-		{
+			// search - not found
 			tvm.SetSearchTerm("tvv");
 			tvm.SetCaseInsensitive(true);
 			tvm.Search();
-
-			int count = tvm.GetSearchResults().size();
-
+			count = tvm.GetSearchResults().size();
 			Assert::AreEqual(0, count);
 		}
 
