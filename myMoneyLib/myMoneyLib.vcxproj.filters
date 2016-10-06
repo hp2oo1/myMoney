@@ -24,6 +24,12 @@
     <ClInclude Include="TransactionViewModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AbstractCriteria.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CriteriaOnDescription.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Transaction.cpp">
@@ -33,6 +39,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TransactionViewModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractCriteria.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CriteriaOnDescription.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,4 +1,5 @@
 #include "TransactionRepository.h"
+#include "CriteriaOnDescription.h"
 
 #include "minicsv.h"
 
@@ -9,6 +10,7 @@ namespace myMoneyLib
 {
 	TransactionRepository::TransactionRepository()
 	{
+		criteriaOnDescription = std::make_shared<AbstractCriteria>(CriteriaOnDescription());
 	}
 
 	TransactionRepository::~TransactionRepository()
@@ -72,5 +74,9 @@ namespace myMoneyLib
 		}
 
 		return results;
+	}
+	std::vector<Transaction> TransactionRepository::FilterTransactionsOnDescription(std::string searchTerm, bool caseInsensitive)
+	{
+		return criteriaOnDescription->meetCriteria(transactions);
 	}
 }
