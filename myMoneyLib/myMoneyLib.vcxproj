@@ -19,15 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AbstractCriteria.h" />
-    <ClInclude Include="CriteriaOnDescription.h" />
+    <ClInclude Include="sqlite3.h" />
+    <ClInclude Include="sqlite3ext.h" />
     <ClInclude Include="Transaction.h" />
     <ClInclude Include="TransactionRepository.h" />
     <ClInclude Include="TransactionViewModel.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AbstractCriteria.cpp" />
-    <ClCompile Include="CriteriaOnDescription.cpp" />
+    <ClCompile Include="sqlite3.c" />
     <ClCompile Include="Transaction.cpp" />
     <ClCompile Include="TransactionRepository.cpp" />
     <ClCompile Include="TransactionViewModel.cpp" />

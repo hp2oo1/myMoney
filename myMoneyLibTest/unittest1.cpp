@@ -28,6 +28,9 @@ namespace myMoneyLibTest
 				 << ""																							<< std::endl;
 			fout.close();
 
+			// set database
+			tvm.SetDB("myMoney.db");
+
 			// load sample
 			tvm.SetInputFile("sample.csv");
 			tvm.Load();

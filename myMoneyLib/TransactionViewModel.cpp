@@ -10,9 +10,14 @@ namespace myMoneyLib
 	{
 	}
 
+	void TransactionViewModel::SetDB(std::string filename)
+	{
+		repository.DBSetPath(filename);
+	}
+
 	void TransactionViewModel::Load()
 	{
-		transactionsTotal = repository.LoadData(inputFilename);
+		transactionsTotal = repository.ImportCSV(inputFilename);
 	}
 	void TransactionViewModel::SetInputFile(std::string filename)
 	{

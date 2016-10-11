@@ -1,6 +1,16 @@
 
 -------------------------------------------------------------
 
+https://www.tutorialspoint.com/sqlite/sqlite_c_cpp.htm
+
+-------------------------------------------------------------
+
+https://blogs.msdn.microsoft.com/vcblog/2014/11/12/cross-platform-mobile-development-with-visual-c/
+
+https://msdn.microsoft.com/en-us/library/dn707598.asp://msdn.microsoft.com/en-us/library/dn707598.aspx
+
+-------------------------------------------------------------
+
 https://www.tutorialspoint.com/design_pattern/filter_pattern.htm
 
 -------------------------------------------------------------

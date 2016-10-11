@@ -24,10 +24,10 @@
     <ClInclude Include="TransactionViewModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AbstractCriteria.h">
+    <ClInclude Include="sqlite3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CriteriaOnDescription.h">
+    <ClInclude Include="sqlite3ext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -41,10 +41,7 @@
     <ClCompile Include="TransactionViewModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AbstractCriteria.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CriteriaOnDescription.cpp">
+    <ClCompile Include="sqlite3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

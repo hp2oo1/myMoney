@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "myMoneyLib", "myMoneyLib\myMoneyLib.vcxproj", "{65BC34CE-A4E1-487A-958B-BF31DCE8957A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4A1E230B-C382-4301-9BAA-A95618201D1E}"
+	ProjectSection(SolutionItems) = preProject
+		notes.txt = notes.txt
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "myMoneyLibTest", "myMoneyLibTest\myMoneyLibTest.vcxproj", "{BD48E7D8-709F-4535-962B-76992769493F}"
 EndProject

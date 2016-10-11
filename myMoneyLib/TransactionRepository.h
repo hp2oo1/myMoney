@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Transaction.h"
-#include "AbstractCriteria.h"
+
+#include "sqlite3.h"
 
 #include <vector>
 #include <memory>
@@ -11,12 +12,18 @@ namespace myMoneyLib
 	class TransactionRepository
 	{
 		std::vector<Transaction>			transactions;
-		std::shared_ptr<AbstractCriteria>	criteriaOnDescription;
+		std::string							dbPath;
+		sqlite3								*db;
 	public:
 		TransactionRepository();
 		~TransactionRepository();
 
-		int LoadData(std::string filename);
+		void DBSetPath(std::string path);
+		void DBCreate();
+		void DBOpen();
+		void DBClose();
+
+		int ImportCSV(std::string filename);
 
 		std::vector<Transaction> SearchTransactions(std::string searchTerm, bool caseInsensitive);
 
