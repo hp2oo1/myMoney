@@ -10,9 +10,14 @@ namespace myMoneyLib
 	{
 	}
 
-	void TransactionViewModel::SetDB(std::string filename)
+	void TransactionViewModel::SetDBPath(std::string filename)
 	{
 		repository.DBSetPath(filename);
+	}
+
+	void TransactionViewModel::CreateDB()
+	{
+		repository.DBCreate();
 	}
 
 	void TransactionViewModel::Load()

@@ -18,7 +18,8 @@ namespace myMoneyLib
 		TransactionViewModel();
 		~TransactionViewModel();
 
-		void SetDB(std::string filename);
+		void SetDBPath(std::string filename);
+		void CreateDB();
 		void Load();
 		void SetInputFile(std::string filename);
 		int  GetTransactionsTotal();

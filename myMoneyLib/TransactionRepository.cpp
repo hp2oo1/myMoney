@@ -75,11 +75,9 @@ namespace myMoneyLib
 
 	int TransactionRepository::ImportCSV(std::string filename)
 	{
-
 		char *zErrMsg = 0;
 		int rc;
-		std::string sql = "";
-		char buff[4096];
+		char sql[4096];
 
 		// import a list of transactions to database
 		mini::csv::ifstream is(filename.c_str());
@@ -111,22 +109,21 @@ namespace myMoneyLib
 				t.accountNumber.erase(0, 1);
 
 				/* Create SQL statement */
-				sprintf_s(buff, "INSERT INTO TRANSACTIONS (ID,DATE,TYPE,DESCRIPTION,VALUE,BALANCE,ACCOUNTNAME,ACCOUNTNUMBER) " \
+				sprintf_s(sql, "INSERT INTO TRANSACTIONS (ID,DATE,TYPE,DESCRIPTION,VALUE,BALANCE,ACCOUNTNAME,ACCOUNTNUMBER) " \
 					"VALUES (%d,'%s','%s','%s',%f,%f,'%s','%s'); ",
 					count, t.date.c_str(), t.type.c_str(), t.description.c_str(), t.value, t.balance, t.accountName.c_str(), t.accountNumber.c_str());
 
-				sql += std::string(buff);
+				/* Execute SQL statement */
+				rc = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
+				if (rc != SQLITE_OK) {
+					fprintf(stderr, "SQL error: %s\n", zErrMsg);
+					sqlite3_free(zErrMsg);
+				}
+				else {
+					fprintf(stdout, "Tranactions imported successfully\n");
+				}
 			}
-			/* Execute SQL statement */
-			rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &zErrMsg);
-			if (rc != SQLITE_OK) {
-				fprintf(stderr, "SQL error: %s\n", zErrMsg);
-				sqlite3_free(zErrMsg);
-			}
-			else {
-				fprintf(stdout, "Tranactions imported successfully\n");
-			}
-		
+
 			DBClose();
 			return count;
 		}

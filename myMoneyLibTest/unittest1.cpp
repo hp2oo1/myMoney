@@ -17,26 +17,16 @@ namespace myMoneyLibTest
 		
 		TEST_METHOD(PrepareSampletData)
 		{
-			// create sample
-			std::ofstream fout("sample.csv");
-			fout << ""																							<< std::endl
-				 << "Date, Type, Description, Value, Balance, Account Name, Account Number"						<< std::endl
-				 << ""																							<< std::endl
-				 << "22/09/2015,D/D,\"'TV LICENCE MBP\",-12.18,945.68,\"'XXXX Y 2006\",\"'123456-12345678\","	<< std::endl
-				 << "22/09/2015,D/D,\"'tv licence mbp\",-12.18,945.68,\"'XXXX Y 2006\",\"'123456-12345678\","	<< std::endl
-				 << ""																							<< std::endl
-				 << ""																							<< std::endl;
-			fout.close();
-
 			// set database
-			tvm.SetDB("myMoney.db");
+			tvm.SetDBPath("myMoney.db");
+			tvm.CreateDB();
 
 			// load sample
-			tvm.SetInputFile("sample.csv");
+			tvm.SetInputFile("../Data/sample.csv");
 			tvm.Load();
 			int total = tvm.GetTransactionsTotal();
 
-			Assert::AreEqual(2, total);
+			Assert::AreEqual(393, total);
 		}
 
 		TEST_METHOD(Search_test)
@@ -57,7 +47,7 @@ namespace myMoneyLibTest
 			tvm.SetCaseInsensitive(true);
 			tvm.Search();
 			count = tvm.GetSearchResults().size();
-			Assert::AreEqual(2, count);
+			Assert::AreEqual(1, count);
 
 			// search - not found
 			tvm.SetSearchTerm("tvv");
