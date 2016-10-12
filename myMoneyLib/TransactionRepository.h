@@ -11,9 +11,12 @@ namespace myMoneyLib
 {
 	class TransactionRepository
 	{
-		std::vector<Transaction>			transactions;
 		std::string							dbPath;
 		sqlite3								*db;
+	
+	public:
+		std::vector<Transaction>			transactions;
+	
 	public:
 		TransactionRepository();
 		~TransactionRepository();

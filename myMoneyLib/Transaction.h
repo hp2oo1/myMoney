@@ -8,6 +8,7 @@ namespace myMoneyLib
 	{
 		friend class TransactionRepository;
 
+	public:
 		std::string		date;
 		std::string		type;
 		std::string		description;

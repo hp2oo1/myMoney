@@ -31,23 +31,29 @@ namespace myMoneyLibTest
 
 		TEST_METHOD(Search_test)
 		{
-			// load sample
-			tvm.SetInputFile("sample.csv");
-			tvm.Load();
+			// set database
+			tvm.SetDBPath("myMoney.db");
 
 			// search
 			tvm.SetSearchTerm("TV");
 			tvm.SetCaseInsensitive(false);
 			tvm.Search();
 			int count = tvm.GetSearchResults().size();
-			Assert::AreEqual(1, count);
+			Assert::AreEqual(13, count);
 
-			// search - case insensitive
+			// search - case insensitive off
+			tvm.SetSearchTerm("tv");
+			tvm.SetCaseInsensitive(false);
+			tvm.Search();
+			count = tvm.GetSearchResults().size();
+			Assert::AreEqual(13, count);
+
+			// search - case insensitive on
 			tvm.SetSearchTerm("tv");
 			tvm.SetCaseInsensitive(true);
 			tvm.Search();
 			count = tvm.GetSearchResults().size();
-			Assert::AreEqual(1, count);
+			Assert::AreEqual(13, count);
 
 			// search - not found
 			tvm.SetSearchTerm("tvv");

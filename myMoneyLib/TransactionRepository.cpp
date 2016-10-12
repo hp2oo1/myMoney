@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <sstream>
 
 namespace myMoneyLib
 {
@@ -104,6 +105,7 @@ namespace myMoneyLib
 				is >> t.date >> t.type >> t.description >> t.value >> t.balance >> t.accountName >> t.accountNumber;
 				count++;
 
+				// remove '
 				t.description.erase(0, 1);
 				t.accountName.erase(0, 1);
 				t.accountNumber.erase(0, 1);
@@ -130,34 +132,58 @@ namespace myMoneyLib
 		return -1;
 	}
 
+	static int callback(void *data, int argc, char **argv, char **azColName)
+	{
+		std::stringstream ss;
+		for (int i = 1; i < argc; ++i)
+		{
+			ss << argv[i];
+		}
+
+		Transaction t;
+		ss >> t.date >> t.type >> t.description >> t.value >> t.balance >> t.accountName >> t.accountNumber;
+
+		std::vector<myMoneyLib::Transaction>* ts = reinterpret_cast<std::vector<myMoneyLib::Transaction>* >(data);			
+		ts->push_back(t);
+
+		return 0;
+	}
+
 	std::vector<Transaction> TransactionRepository::SearchTransactions(std::string searchTerm, bool caseInsensitive)
 	{
+		char *zErrMsg = 0;
+		int rc;
+		char sql[4096];
+		const char* data = "Callback function called";
+
 		if (caseInsensitive)
 		{
 			std::transform(searchTerm.begin(), searchTerm.end(), searchTerm.begin(), ::tolower);
+			sprintf_s(sql, "SELECT * FROM TRANSACTIONS WHERE lower(DESCRIPTION) like '%s%s%s'", "%", searchTerm.c_str(), "%");
+		}
+		else
+		{
+			sprintf_s(sql, "SELECT * FROM TRANSACTIONS WHERE DESCRIPTION like '%s%s%s'", "%", searchTerm.c_str(), "%");
 		}
 
-		std::vector<Transaction> results;
-		std::size_t found;
-		for (int i = 0; i < transactions.size(); ++i)
-		{
-			Transaction &t = transactions[i];
-			if (caseInsensitive)
-			{
-				std::string description = t.description;
-				std::transform(description.begin(), description.end(), description.begin(), ::tolower);
-				found = description.find(searchTerm);
-			}
-			else
-			{
-				found = t.description.find(searchTerm);
-			}
-			//
-			if (found != std::string::npos)
-			{
-				results.push_back(t);
-			}
+		/* Create SQL statement */
+		//sprintf_s(sql, "SELECT * FROM TRANSACTIONS WHERE lower(DESCRIPTION) like '%%s%'", searchTerm.c_str());
+
+		std::vector<myMoneyLib::Transaction> results;
+
+		DBOpen();
+
+		/* Execute SQL statement */
+		rc = sqlite3_exec(db, sql, callback, &results, &zErrMsg);
+		if (rc != SQLITE_OK) {
+			fprintf(stderr, "SQL error: %s\n", zErrMsg);
+			sqlite3_free(zErrMsg);
 		}
+		else {
+			fprintf(stdout, "Tranactions searched successfully\n");
+		}
+
+		DBClose();
 
 		return results;
 	}
