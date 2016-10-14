@@ -39,21 +39,21 @@ namespace myMoneyLibTest
 			tvm.SetCaseInsensitive(false);
 			tvm.Search();
 			int count = tvm.GetSearchResults().size();
-			Assert::AreEqual(13, count);
+			Assert::AreEqual(12, count);
 
 			// search - case insensitive off
 			tvm.SetSearchTerm("tv");
 			tvm.SetCaseInsensitive(false);
 			tvm.Search();
 			count = tvm.GetSearchResults().size();
-			Assert::AreEqual(13, count);
+			Assert::AreEqual(12, count);
 
 			// search - case insensitive on
 			tvm.SetSearchTerm("tv");
 			tvm.SetCaseInsensitive(true);
 			tvm.Search();
 			count = tvm.GetSearchResults().size();
-			Assert::AreEqual(13, count);
+			Assert::AreEqual(12, count);
 
 			// search - not found
 			tvm.SetSearchTerm("tvv");
