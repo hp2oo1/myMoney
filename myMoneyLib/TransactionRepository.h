@@ -15,9 +15,6 @@ namespace myMoneyLib
 		sqlite3								*db;
 	
 	public:
-		std::vector<Transaction>			transactions;
-	
-	public:
 		TransactionRepository();
 		~TransactionRepository();
 
