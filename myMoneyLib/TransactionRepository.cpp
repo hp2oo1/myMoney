@@ -10,6 +10,77 @@
 
 namespace myMoneyLib
 {
+	/////////////////////
+	// local functions //
+	/////////////////////
+
+	void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+	    if(from.empty())
+	        return;
+	    size_t start_pos = 0;
+	    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+	        str.replace(start_pos, from.length(), to);
+	        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+	    }
+	}
+
+	int callback(void *data, int argc, char **argv, char **azColName)
+	{
+		std::stringstream ss;
+		for (int i = 1; i < argc; ++i)
+		{
+			ss << argv[i];
+		}
+
+		Transaction t;
+		ss >> t.date >> t.type >> t.description >> t.value >> t.balance >> t.accountName >> t.accountNumber;
+
+		std::vector<myMoneyLib::Transaction>* ts = reinterpret_cast<std::vector<myMoneyLib::Transaction>* >(data);			
+		ts->push_back(t);
+
+		return 0;
+	}
+
+	std::vector<Transaction> ImportCSV_(std::string filename)
+	{
+		std::vector<Transaction> transactions;
+
+		// import a list of transactions to database
+		mini::csv::ifstream is(filename.c_str());
+		is.set_delimiter(',', "$$");
+		is.enable_trim_quote_on_str(true, '\"');
+		is.enable_terminate_on_blank_line(false);
+		if (is.is_open())
+		{
+			Transaction t;
+			bool isHeadLine = true;
+			while (is.read_line())
+			{
+				// skip head line (first non-blank line)
+				if (isHeadLine)
+				{
+					isHeadLine = false;
+					is.read_line();
+				}
+
+				// load data line
+				is >> t.date >> t.type >> t.description >> t.value >> t.balance >> t.accountName >> t.accountNumber;
+
+				// remove first quote character
+				t.description.erase(0, 1);
+				t.accountName.erase(0, 1);
+				t.accountNumber.erase(0, 1);
+				// double single quote to make sqlite3 insert happy
+				replaceAll(t.description, "'", "''");
+
+				transactions.push_back(t);
+			}
+		}
+
+		return transactions;
+	}
+	/////////////////////
+
 	TransactionRepository::TransactionRepository()
 	{
 	}
@@ -76,61 +147,34 @@ namespace myMoneyLib
 		sqlite3_close(db);
 	}
 
-	void replaceAll(std::string& str, const std::string& from, const std::string& to) {
-	    if(from.empty())
-	        return;
-	    size_t start_pos = 0;
-	    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
-	        str.replace(start_pos, from.length(), to);
-	        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
-	    }
-	}
-
 	int TransactionRepository::ImportCSV(std::string filename)
 	{
+		std::vector<Transaction> transactions = ImportCSV_(filename);
+		int count = transactions.size();
+
 		char *zErrMsg = 0;
 		int rc;
 		char sql[4096];
+		std::string sqlBlock = "";
+		int blockSize = 4096;
 
-		// import a list of transactions to database
-		mini::csv::ifstream is(filename.c_str());
-		is.set_delimiter(',', "$$");
-		is.enable_trim_quote_on_str(true, '\"');
-		is.enable_terminate_on_blank_line(false);
-		if (is.is_open())
+		DBOpen();
+
+		sqlBlock = "INSERT INTO TRANSACTIONS (ID,DATE,TYPE,DESCRIPTION,VALUE,BALANCE,ACCOUNTNAME,ACCOUNTNUMBER) VALUES ";
+		for (int i = 0; i < count; ++i)
 		{
-			DBOpen();
+			Transaction& t = transactions[i];
 
-			Transaction t;
-			bool isHeadLine = true;
-			int count = 0;
-			while (is.read_line())
+			// Create SQL statement
+			sprintf_s(sql, "(%d,'%s','%s','%s',%f,%f,'%s','%s'), ", i+1, t.date.c_str(), t.type.c_str(), t.description.c_str(), t.value, t.balance, t.accountName.c_str(), t.accountNumber.c_str());
+			sqlBlock += sql;
+
+			if (sqlBlock.size() > blockSize || i == count-1)
 			{
-				// skip head line (first non-blank line)
-				if (isHeadLine)
-				{
-					isHeadLine = false;
-					is.read_line();
-				}
+				sqlBlock[sqlBlock.size()-2] = ';';
 				
-				// load data line
-				is >> t.date >> t.type >> t.description >> t.value >> t.balance >> t.accountName >> t.accountNumber;
-				count++;
-
-				// remove first quote character
-				t.description.erase(0, 1);
-				t.accountName.erase(0, 1);
-				t.accountNumber.erase(0, 1);
-				// double single quote to make sqlite3 insert happy
-				replaceAll(t.description, "'", "''"); 
-
-				/* Create SQL statement */
-				sprintf_s(sql, "INSERT INTO TRANSACTIONS (ID,DATE,TYPE,DESCRIPTION,VALUE,BALANCE,ACCOUNTNAME,ACCOUNTNUMBER) " \
-					"VALUES (%d,'%s','%s','%s',%f,%f,'%s','%s'); ",
-					count, t.date.c_str(), t.type.c_str(), t.description.c_str(), t.value, t.balance, t.accountName.c_str(), t.accountNumber.c_str());
-
-				/* Execute SQL statement */
-				rc = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
+				// Execute SQL statement
+				rc = sqlite3_exec(db, sqlBlock.c_str(), NULL, 0, &zErrMsg);
 				if (rc != SQLITE_OK) {
 					fprintf(stderr, "SQL error: %s\n", zErrMsg);
 					sqlite3_free(zErrMsg);
@@ -138,29 +182,13 @@ namespace myMoneyLib
 				else {
 					fprintf(stdout, "Tranactions imported successfully\n");
 				}
+
+				sqlBlock = "INSERT INTO TRANSACTIONS (ID,DATE,TYPE,DESCRIPTION,VALUE,BALANCE,ACCOUNTNAME,ACCOUNTNUMBER) VALUES ";
 			}
-
-			DBClose();
-			return count;
-		}
-		return -1;
-	}
-
-	static int callback(void *data, int argc, char **argv, char **azColName)
-	{
-		std::stringstream ss;
-		for (int i = 1; i < argc; ++i)
-		{
-			ss << argv[i];
 		}
 
-		Transaction t;
-		ss >> t.date >> t.type >> t.description >> t.value >> t.balance >> t.accountName >> t.accountNumber;
-
-		std::vector<myMoneyLib::Transaction>* ts = reinterpret_cast<std::vector<myMoneyLib::Transaction>* >(data);			
-		ts->push_back(t);
-
-		return 0;
+		DBClose();
+		return count;
 	}
 
 	std::vector<Transaction> TransactionRepository::SearchTransactions(std::string searchColumn, std::string searchTerm)
