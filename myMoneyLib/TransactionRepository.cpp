@@ -154,27 +154,27 @@ namespace myMoneyLib
 
 		char *zErrMsg = 0;
 		int rc;
-		char sql[4096];
-		std::string sqlBlock = "";
-		int blockSize = 4096;
+		char sql[1024];
+		char sqlBlock[1024*101];
+		long blockSize = 1024*100; // sqlite3.c(10672):# define SQLITE_MAX_SQL_LENGTH 1000000000
 
 		DBOpen();
 
-		sqlBlock = "INSERT INTO TRANSACTIONS (ID,DATE,TYPE,DESCRIPTION,VALUE,BALANCE,ACCOUNTNAME,ACCOUNTNUMBER) VALUES ";
+		strcpy_s(sqlBlock, "INSERT INTO TRANSACTIONS (ID,DATE,TYPE,DESCRIPTION,VALUE,BALANCE,ACCOUNTNAME,ACCOUNTNUMBER) VALUES ");
 		for (int i = 0; i < count; ++i)
 		{
 			Transaction& t = transactions[i];
 
 			// Create SQL statement
 			sprintf_s(sql, "(%d,'%s','%s','%s',%f,%f,'%s','%s'), ", i+1, t.date.c_str(), t.type.c_str(), t.description.c_str(), t.value, t.balance, t.accountName.c_str(), t.accountNumber.c_str());
-			sqlBlock += sql;
+			strcat_s(sqlBlock, sql);
 
-			if (sqlBlock.size() > blockSize || i == count-1)
+			if (strlen(sqlBlock) > blockSize || i == count-1)
 			{
-				sqlBlock[sqlBlock.size()-2] = ';';
+				sqlBlock[strlen(sqlBlock)-2] = ';';
 				
 				// Execute SQL statement
-				rc = sqlite3_exec(db, sqlBlock.c_str(), NULL, 0, &zErrMsg);
+				rc = sqlite3_exec(db, sqlBlock, NULL, 0, &zErrMsg);
 				if (rc != SQLITE_OK) {
 					fprintf(stderr, "SQL error: %s\n", zErrMsg);
 					sqlite3_free(zErrMsg);
@@ -183,7 +183,7 @@ namespace myMoneyLib
 					fprintf(stdout, "Tranactions imported successfully\n");
 				}
 
-				sqlBlock = "INSERT INTO TRANSACTIONS (ID,DATE,TYPE,DESCRIPTION,VALUE,BALANCE,ACCOUNTNAME,ACCOUNTNUMBER) VALUES ";
+				strcpy_s(sqlBlock, "INSERT INTO TRANSACTIONS (ID,DATE,TYPE,DESCRIPTION,VALUE,BALANCE,ACCOUNTNAME,ACCOUNTNUMBER) VALUES ");
 			}
 		}
 
