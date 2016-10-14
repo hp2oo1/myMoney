@@ -11,6 +11,7 @@ namespace myMoneyLib
 		std::string					inputFilename;
 		int							transactionsTotal;
 		
+		std::string					searchColumn;
 		std::string					searchTerm;
 		std::vector<Transaction>	transactionsFound;
 	public:
@@ -24,7 +25,8 @@ namespace myMoneyLib
 		int  GetTransactionsTotal();
 
 		void Search();
-		void SetSearchTerm(std::string search);
+		void SetSearchColumn(std::string column);
+		void SetSearchTerm(std::string term);
 		std::vector<Transaction> GetSearchResults();
 	};
 }

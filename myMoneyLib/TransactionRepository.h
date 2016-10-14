@@ -25,6 +25,6 @@ namespace myMoneyLib
 
 		int ImportCSV(std::string filename);
 
-		std::vector<Transaction> SearchTransactions(std::string searchTerm);
+		std::vector<Transaction> SearchTransactions(std::string searchColumn, std::string searchTerm);
 	};
 }

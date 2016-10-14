@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <sstream>
+#include <algorithm>
 
 namespace myMoneyLib
 {
@@ -31,7 +32,8 @@ namespace myMoneyLib
 		DBOpen();
 
 		/* Create SQL statement */
-		sql = "CREATE TABLE TRANSACTIONS("  \
+		sql = "DROP TABLE TRANSACTIONS; "  \
+		    "CREATE TABLE TRANSACTIONS("  \
 			"ID INT PRIMARY KEY      NOT NULL," \
 			"DATE           TEXT     NOT NULL," \
 			"TYPE           TEXT     NOT NULL," \
@@ -74,6 +76,16 @@ namespace myMoneyLib
 		sqlite3_close(db);
 	}
 
+	void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+	    if(from.empty())
+	        return;
+	    size_t start_pos = 0;
+	    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+	        str.replace(start_pos, from.length(), to);
+	        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+	    }
+	}
+
 	int TransactionRepository::ImportCSV(std::string filename)
 	{
 		char *zErrMsg = 0;
@@ -105,10 +117,12 @@ namespace myMoneyLib
 				is >> t.date >> t.type >> t.description >> t.value >> t.balance >> t.accountName >> t.accountNumber;
 				count++;
 
-				// remove '
+				// remove first quote character
 				t.description.erase(0, 1);
 				t.accountName.erase(0, 1);
 				t.accountNumber.erase(0, 1);
+				// double single quote to make sqlite3 insert happy
+				replaceAll(t.description, "'", "''"); 
 
 				/* Create SQL statement */
 				sprintf_s(sql, "INSERT INTO TRANSACTIONS (ID,DATE,TYPE,DESCRIPTION,VALUE,BALANCE,ACCOUNTNAME,ACCOUNTNUMBER) " \
@@ -149,7 +163,7 @@ namespace myMoneyLib
 		return 0;
 	}
 
-	std::vector<Transaction> TransactionRepository::SearchTransactions(std::string searchTerm)
+	std::vector<Transaction> TransactionRepository::SearchTransactions(std::string searchColumn, std::string searchTerm)
 	{
 		std::vector<myMoneyLib::Transaction> results;
 
@@ -160,7 +174,7 @@ namespace myMoneyLib
 		DBOpen();
 
 		/* Create SQL statement */
-		sprintf_s(sql, "SELECT * FROM TRANSACTIONS WHERE DESCRIPTION LIKE '%s%s%s'", "%", searchTerm.c_str(), "%");
+		sprintf_s(sql, "SELECT * FROM TRANSACTIONS WHERE %s LIKE '%s%s%s'", searchColumn.c_str(), "%", searchTerm.c_str(), "%");
 		
 		/* Execute SQL statement */
 		rc = sqlite3_exec(db, sql, callback, &results, &zErrMsg);
@@ -173,7 +187,6 @@ namespace myMoneyLib
 		}
 
 		DBClose();
-
 		return results;
 	}
 }

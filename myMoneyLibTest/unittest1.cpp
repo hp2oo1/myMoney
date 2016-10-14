@@ -34,7 +34,8 @@ namespace myMoneyLibTest
 			// set database
 			tvm.SetDBPath("myMoney.db");
 
-			// search (case insensitive)
+			// search description (case insensitive)
+			tvm.SetSearchColumn("description");
 			tvm.SetSearchTerm("tv");
 			tvm.Search();
 			int count = tvm.GetSearchResults().size();
