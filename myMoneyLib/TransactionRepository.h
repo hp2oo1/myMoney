@@ -28,8 +28,6 @@ namespace myMoneyLib
 
 		int ImportCSV(std::string filename);
 
-		std::vector<Transaction> SearchTransactions(std::string searchTerm, bool caseInsensitive);
-
-		std::vector<Transaction> FilterTransactionsOnDescription(std::string searchTerm, bool caseInsensitive);
+		std::vector<Transaction> SearchTransactions(std::string searchTerm);
 	};
 }

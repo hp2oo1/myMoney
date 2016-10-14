@@ -41,16 +41,12 @@ namespace myMoneyLib
 		}
 		else
 		{
-			transactionsFound = repository.SearchTransactions(searchTerm, caseInsensitive);
+			transactionsFound = repository.SearchTransactions(searchTerm);
 		}
 	}
 	void TransactionViewModel::SetSearchTerm(std::string search)
 	{
 		searchTerm = search;
-	}
-	void TransactionViewModel::SetCaseInsensitive(bool insensitive)
-	{
-		caseInsensitive = insensitive;
 	}
 	std::vector<Transaction> TransactionViewModel::GetSearchResults()
 	{

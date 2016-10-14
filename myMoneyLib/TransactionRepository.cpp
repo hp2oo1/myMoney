@@ -149,30 +149,19 @@ namespace myMoneyLib
 		return 0;
 	}
 
-	std::vector<Transaction> TransactionRepository::SearchTransactions(std::string searchTerm, bool caseInsensitive)
+	std::vector<Transaction> TransactionRepository::SearchTransactions(std::string searchTerm)
 	{
+		std::vector<myMoneyLib::Transaction> results;
+
 		char *zErrMsg = 0;
 		int rc;
 		char sql[4096];
-		const char* data = "Callback function called";
-
-		if (caseInsensitive)
-		{
-			std::transform(searchTerm.begin(), searchTerm.end(), searchTerm.begin(), ::tolower);
-			sprintf_s(sql, "SELECT * FROM TRANSACTIONS WHERE lower(DESCRIPTION) like '%s%s%s'", "%", searchTerm.c_str(), "%");
-		}
-		else
-		{
-			sprintf_s(sql, "SELECT * FROM TRANSACTIONS WHERE DESCRIPTION like '%s%s%s'", "%", searchTerm.c_str(), "%");
-		}
-
-		/* Create SQL statement */
-		//sprintf_s(sql, "SELECT * FROM TRANSACTIONS WHERE lower(DESCRIPTION) like '%%s%'", searchTerm.c_str());
-
-		std::vector<myMoneyLib::Transaction> results;
 
 		DBOpen();
 
+		/* Create SQL statement */
+		sprintf_s(sql, "SELECT * FROM TRANSACTIONS WHERE DESCRIPTION LIKE '%s%s%s'", "%", searchTerm.c_str(), "%");
+		
 		/* Execute SQL statement */
 		rc = sqlite3_exec(db, sql, callback, &results, &zErrMsg);
 		if (rc != SQLITE_OK) {
@@ -186,9 +175,5 @@ namespace myMoneyLib
 		DBClose();
 
 		return results;
-	}
-	std::vector<Transaction> TransactionRepository::FilterTransactionsOnDescription(std::string searchTerm, bool caseInsensitive)
-	{
-		return std::vector<Transaction>();
 	}
 }
