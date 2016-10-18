@@ -98,24 +98,40 @@ namespace myMoneyLib
 	{
 		char *zErrMsg = 0;
 		int rc;
-		char *sql;
+		std::string sql;
 
 		DBOpen();
 
 		/* Create SQL statement */
-		sql = "DROP TABLE TRANSACTIONS; "  \
-		    "CREATE TABLE TRANSACTIONS("  \
-			"ID INT PRIMARY KEY      NOT NULL," \
-			"DATE           DATE     NOT NULL," \
-			"TYPE           CHAR(10) NOT NULL," \
-			"DESCRIPTION    TEXT     NOT NULL," \
-			"VALUE          REAL     NOT NULL," \
-			"BALANCE        REAL     NOT NULL," \
-			"ACCOUNTNAME    CHAR(50) NOT NULL," \
-			"ACCOUNTNUMBER  CHAR(50) NOT NULL);";
+		
+		// clear all
+		sql = "DROP TABLE IF EXISTS TRANSACTIONS; "  \
+			"DROP TABLE IF EXISTS CATEGORIES; "  \
+			"DROP TABLE IF EXISTS TRANSACTION_CATEGORIES; ";
+
+		// transactions table
+		sql += "CREATE TABLE IF NOT EXISTS TRANSACTIONS("  \
+			"TRANSACTION_ID INT PRIMARY KEY," \
+			"DATE DATE NOT NULL," \
+			"TYPE CHAR(10) NOT NULL," \
+			"DESCRIPTION TEXT NOT NULL," \
+			"VALUE REAL NOT NULL," \
+			"BALANCE REAL NOT NULL," \
+			"ACCOUNTNAME CHAR(255) NOT NULL," \
+			"ACCOUNTNUMBER CHAR(255) NOT NULL); ";
+
+		// categories table
+		sql += "CREATE TABLE IF NOT EXISTS CATEGORIES(" \
+			"CATEGORY_ID INT PRIMARY KEY," \
+		    "NAME CHAR(255) NOT NULL); ";
+
+		// transactions_categories table
+		sql += "CREATE TABLE IF NOT EXISTS TRANSACTION_CATEGORIES(" \
+			"TRANSACTION_ID INT PRIMARY KEY," \
+			"CATEGORY_ID INT NOT NULL); ";
 
 		/* Execute SQL statement */
-		rc = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
+		rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &zErrMsg);
 		if (rc != SQLITE_OK) {
 			fprintf(stderr, "SQL error: %s\n", zErrMsg);
 			sqlite3_free(zErrMsg);
@@ -150,7 +166,7 @@ namespace myMoneyLib
 	int TransactionRepository::ImportCSV(std::string filename)
 	{
 		std::vector<Transaction> transactions = ImportCSV_(filename);
-		int count = transactions.size();
+		int total = transactions.size();
 
 		char *zErrMsg = 0;
 		int rc;
@@ -160,8 +176,10 @@ namespace myMoneyLib
 
 		DBOpen();
 
-		strcpy_s(sqlBlock, "INSERT INTO TRANSACTIONS (ID,DATE,TYPE,DESCRIPTION,VALUE,BALANCE,ACCOUNTNAME,ACCOUNTNUMBER) VALUES ");
-		for (int i = 0; i < count; ++i)
+		const char* sqlCommon = "INSERT INTO TRANSACTIONS (TRANSACTION_ID,DATE,TYPE,DESCRIPTION,VALUE,BALANCE,ACCOUNTNAME,ACCOUNTNUMBER) VALUES ";
+
+		strcpy_s(sqlBlock, sqlCommon);
+		for (int i = 0; i < total; ++i)
 		{
 			Transaction& t = transactions[i];
 			
@@ -175,7 +193,7 @@ namespace myMoneyLib
 			sprintf_s(sql, "(%d,'%s','%s','%s',%f,%f,'%s','%s'), ", i+1, date, t.type.c_str(), t.description.c_str(), t.value, t.balance, t.accountName.c_str(), t.accountNumber.c_str());
 			strcat_s(sqlBlock, sql);
 
-			if (strlen(sqlBlock) > blockSize || i == count-1)
+			if (strlen(sqlBlock) > blockSize || i == total-1)
 			{
 				sqlBlock[strlen(sqlBlock)-2] = ';';
 				
@@ -184,17 +202,19 @@ namespace myMoneyLib
 				if (rc != SQLITE_OK) {
 					fprintf(stderr, "SQL error: %s\n", zErrMsg);
 					sqlite3_free(zErrMsg);
+					total = -1;
+					break;
 				}
-				else {
+				else {	
 					fprintf(stdout, "Tranactions imported successfully\n");
 				}
 
-				strcpy_s(sqlBlock, "INSERT INTO TRANSACTIONS (ID,DATE,TYPE,DESCRIPTION,VALUE,BALANCE,ACCOUNTNAME,ACCOUNTNUMBER) VALUES ");
+				strcpy_s(sqlBlock, sqlCommon);
 			}
 		}
 
 		DBClose();
-		return count;
+		return total;
 	}
 
 	std::vector<Transaction> TransactionRepository::SearchTransactions(std::string searchColumn, std::string searchTerm)
