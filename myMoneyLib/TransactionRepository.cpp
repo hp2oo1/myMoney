@@ -106,8 +106,8 @@ namespace myMoneyLib
 		sql = "DROP TABLE TRANSACTIONS; "  \
 		    "CREATE TABLE TRANSACTIONS("  \
 			"ID INT PRIMARY KEY      NOT NULL," \
-			"DATE           TEXT     NOT NULL," \
-			"TYPE           TEXT     NOT NULL," \
+			"DATE           DATE     NOT NULL," \
+			"TYPE           CHAR(10) NOT NULL," \
 			"DESCRIPTION    TEXT     NOT NULL," \
 			"VALUE          REAL     NOT NULL," \
 			"BALANCE        REAL     NOT NULL," \
@@ -156,7 +156,7 @@ namespace myMoneyLib
 		int rc;
 		char sql[1024];
 		char sqlBlock[1024*101];
-		long blockSize = 1024*100; // sqlite3.c(10672):# define SQLITE_MAX_SQL_LENGTH 1000000000
+		size_t blockSize = 1024*100; // sqlite3.c(10672):# define SQLITE_MAX_SQL_LENGTH 1000000000
 
 		DBOpen();
 
@@ -164,9 +164,15 @@ namespace myMoneyLib
 		for (int i = 0; i < count; ++i)
 		{
 			Transaction& t = transactions[i];
+			
+			// Convert to SQL date format
+			int dd, mm, yyyy;
+			sscanf_s(t.date.c_str(), "%02d/%02d/%04d", &dd, &mm, &yyyy);
+			char date[11];
+			sprintf_s(date, "%04d-%02d-%02d", yyyy, mm, dd);
 
 			// Create SQL statement
-			sprintf_s(sql, "(%d,'%s','%s','%s',%f,%f,'%s','%s'), ", i+1, t.date.c_str(), t.type.c_str(), t.description.c_str(), t.value, t.balance, t.accountName.c_str(), t.accountNumber.c_str());
+			sprintf_s(sql, "(%d,'%s','%s','%s',%f,%f,'%s','%s'), ", i+1, date, t.type.c_str(), t.description.c_str(), t.value, t.balance, t.accountName.c_str(), t.accountNumber.c_str());
 			strcat_s(sqlBlock, sql);
 
 			if (strlen(sqlBlock) > blockSize || i == count-1)
